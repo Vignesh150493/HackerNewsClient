@@ -8,7 +8,6 @@
     - Abstract classes.
     - Basic Unit testing
     
-    //Look into testing again
 - Unit Testing,
     - Using dart test package for basic api layer testing.
     - Mocking client.
