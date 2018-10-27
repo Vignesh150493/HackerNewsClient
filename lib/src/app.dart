@@ -12,6 +12,7 @@ class App extends StatelessWidget {
         child: MaterialApp(
           title: "News",
           onGenerateRoute: routes,
+          debugShowCheckedModeBanner: false,
         ),
       ),
     );

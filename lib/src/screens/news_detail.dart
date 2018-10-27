@@ -1,13 +1,21 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
+import 'dart:async';
 import '../blocs/comments_provider.dart';
 import '../models/item_model.dart';
 import '../widgets/comment.dart';
+import 'dart:math' as math;
 
-class NewsDetail extends StatelessWidget {
+class NewsDetail extends StatefulWidget {
   final int itemId;
 
   NewsDetail({this.itemId});
+
+  @override
+  _NewsDetailState createState() => _NewsDetailState();
+}
+
+class _NewsDetailState extends State<NewsDetail> {
+  GlobalKey stickyKey = new GlobalKey();
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +36,7 @@ class NewsDetail extends StatelessWidget {
           return Text('Loading');
         }
 
-        final itemFuture = snapshot.data[itemId];
+        final itemFuture = snapshot.data[widget.itemId];
         return FutureBuilder(
           future: itemFuture,
           builder: (context, AsyncSnapshot<ItemModel> itemSnapshot) {
@@ -45,7 +53,6 @@ class NewsDetail extends StatelessWidget {
 
   Widget buildList(ItemModel item, Map<int, Future<ItemModel>> itemMap) {
     final children = <Widget>[];
-    children.add(buildTitle(item));
     final commentsList = item.kids.map((kidId) {
       return Comment(
         itemId: kidId,
@@ -54,7 +61,42 @@ class NewsDetail extends StatelessWidget {
       );
     }).toList();
     children.addAll(commentsList);
-    return ListView(children: children);
+    return CustomScrollView(
+      slivers: <Widget>[
+        makeHeader(item.title),
+        SliverList(
+          delegate: SliverChildListDelegate(children),
+        ),
+      ],
+    );
+  }
+
+  SliverPersistentHeader makeHeader(String headerText) {
+    final keyContext = stickyKey.currentContext;
+    RenderBox box;
+    if (keyContext != null) {
+      // widget is visible
+      box = keyContext.findRenderObject();
+    }
+    return SliverPersistentHeader(
+      pinned: true,
+      delegate: _SliverAppBarDelegate(
+        minHeight: keyContext != null ? box.size.height + 10.0 : 60.0,
+        maxHeight: 250.0,
+        child: Container(
+            color: Colors.lightBlue,
+            child: Container(
+              margin: EdgeInsets.symmetric(horizontal: 10.0),
+              child: Center(
+                  child: Text(
+                headerText,
+                key: stickyKey,
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+              )),
+            )),
+      ),
+    );
   }
 
   Widget buildTitle(ItemModel item) {
@@ -70,5 +112,36 @@ class NewsDetail extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
+  _SliverAppBarDelegate({
+    @required this.minHeight,
+    @required this.maxHeight,
+    @required this.child,
+  });
+
+  final double minHeight;
+  final double maxHeight;
+  final Widget child;
+
+  @override
+  double get minExtent => minHeight;
+
+  @override
+  double get maxExtent => math.max(maxHeight, minHeight);
+
+  @override
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return new SizedBox.expand(child: child);
+  }
+
+  @override
+  bool shouldRebuild(_SliverAppBarDelegate oldDelegate) {
+    return maxHeight != oldDelegate.maxHeight ||
+        minHeight != oldDelegate.minHeight ||
+        child != oldDelegate.child;
   }
 }
