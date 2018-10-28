@@ -5,17 +5,13 @@ import '../models/item_model.dart';
 import '../widgets/comment.dart';
 import 'dart:math' as math;
 
-class NewsDetail extends StatefulWidget {
+class NewsDetail extends StatelessWidget {
+
   final int itemId;
 
   NewsDetail({this.itemId});
 
-  @override
-  _NewsDetailState createState() => _NewsDetailState();
-}
-
-class _NewsDetailState extends State<NewsDetail> {
-  GlobalKey stickyKey = new GlobalKey();
+  final GlobalKey stickyKey = new GlobalKey();
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +32,7 @@ class _NewsDetailState extends State<NewsDetail> {
           return Text('Loading');
         }
 
-        final itemFuture = snapshot.data[widget.itemId];
+        final itemFuture = snapshot.data[itemId];
         return FutureBuilder(
           future: itemFuture,
           builder: (context, AsyncSnapshot<ItemModel> itemSnapshot) {
