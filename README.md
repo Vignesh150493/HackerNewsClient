@@ -14,7 +14,8 @@
     
 We are clearing caches on refresh and then fetch from server
 which would again populate the cache.
-TODO:
- - We fetch from server every single time, and populate cache.
- - Start storing/fetching the list of ids to and from cache too.
- - Stateful Widget probably not needed for GlobalKey in Ticket detail page. Check. 
+
+- TODO:
+     - We fetch from server every single time, and populate cache.
+     - Start storing/fetching the list of ids to and from cache too.
+     - Stateful Widget probably not needed for GlobalKey in Ticket detail page. Check. 
